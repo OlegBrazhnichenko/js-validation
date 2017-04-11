@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<body>
+    <div class="main">
+        <input name="first_name" type="text" placeholder="Enter your First name"><br>
+        <input name="last_name" type="text" placeholder="Enter your Last name"><br>
+        <input name="user_name" type="text" placeholder="Enter your Username"><br>
+        <input name="email" type="text" placeholder="Enter your Email"><br>
+        <input name="password" type="password" placeholder="Enter your Password"><br>
+        <input name="repeat_pass" type="password" placeholder="Repeat your password"><br>
+        <input type="button" value="sign up">
+    </div>
+    <script>
+        $("input:not([type='button'])").on({
+            keyup : function(){
+                validate(this)
+            }
+        });
+        $("input[type='button']").on({
+            click : function(){
+                check();
+            }
+
+        });
+        var regex = {
+            first_name  : /(^[a-z0-9_ -]{0,}$)/i,
+            last_name   : /(^[a-z0-9_ -]{0,}$)/i,
+            user_name   : /(^[a-z0-9]{0,}$)/i,
+            email       : /(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/i,
+            password    : /(^(.){9,}$)/i
+        };
+        function validate(element){
+            if (regex[element.name] != undefined){
+                if(!regex[element.name].test(element.value)){
+                    $(element).css('background-color', 'red');
+                } else{
+                    $(element).css('background-color', 'white');
+                }
+            }else if (element.name == "repeat_pass"){
+                if (element.value == $("input[name='password']")[0].value){
+                    console.log("good");
+                    $(element).css('background-color', 'white');
+                }else{
+                    $(element).css('background-color', 'red');
+                }
+            }
+        }
+        function check(){
+            var check_obj = {
+                login : {
+                    url   : "./login.json",
+                    param : $("input[name='user_name']")[0].value
+                },
+                email : {
+                    url   : "./email.json",
+                    param : $("input[name='email']")[0].value
+                }
+            };
+            $.each( check_obj, function( key, obj ) {
+                $.ajax({
+                    type: 'GET',
+                    url: obj.url,
+                    dataType: 'json',
+                    success: function (data) {
+                        $.each(data, function(index, element) {
+                            if(obj.param.toLowerCase() == element[key].toLowerCase()){
+                                alert("User with same "+ key +" is already exist!");
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
