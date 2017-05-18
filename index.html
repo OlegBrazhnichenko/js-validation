@@ -3,17 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <link rel="stylesheet" href="main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            crossorigin="anonymous"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
 </head>
 <body>
-    <div class="main">
-        <input name="first_name" type="text" placeholder="Enter your First name"><br>
-        <input name="last_name" type="text" placeholder="Enter your Last name"><br>
-        <input name="user_name" type="text" placeholder="Enter your Username"><br>
-        <input name="email" type="text" placeholder="Enter your Email"><br>
-        <input name="password" type="password" placeholder="Enter your Password"><br>
-        <input name="repeat_pass" type="password" placeholder="Repeat your password"><br>
-        <input type="button" value="sign up">
+    <div class="main ui one columnstackable center aligned page grid middle aligned content">
+        <div class="column five wide ui segment form">
+            <div class="ui input fluid field">
+                <input name="first_name" type="text" placeholder="Enter your First name"><br>
+            </div>
+            <div class="ui input fluid field">
+                <input name="last_name" type="text" placeholder="Enter your Last name"><br>
+            </div>
+            <div class="ui input fluid field">
+                <input name="user_name" type="text" placeholder="Enter your Username"><br>
+            </div>
+            <div class="ui input fluid field">
+                <input name="email" type="text" placeholder="Enter your Email"><br>
+            </div>
+            <div class="ui input fluid field">
+                <input name="password" type="password" placeholder="Enter your Password"><br>
+            </div>
+            <div class="ui input fluid field">
+                <input name="repeat_pass" type="password" placeholder="Repeat your password"><br>
+            </div>
+            <div class="ui divider"></div>
+            <div class="ui button fluid" id="submit" tabindex="0">
+                sign up
+            </div>
+        </div>
     </div>
     <script>
         $("input:not([type='button'])").on({
@@ -21,34 +45,52 @@
                 validate(this)
             }
         });
-        $("input[type='button']").on({
+        $("#submit").on({
             click : function(){
-                check();
+                var inputs = $('input');
+                for (var i = 0; i< inputs.length;i++){
+                    if(validate(inputs[i]) && inputs.length-1 == 1){
+                        check();
+                    }
+                }
+
             }
 
         });
         var regex = {
-            first_name  : /(^[a-z0-9_ -]{0,}$)/i,
-            last_name   : /(^[a-z0-9_ -]{0,}$)/i,
-            user_name   : /(^[a-z0-9]{0,}$)/i,
-            email       : /(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/i,
-            password    : /(^(.){9,}$)/i
+            first_name  : /(^[a-z0-9_ -]{1,}$)/i,
+            last_name   : /(^[a-z0-9_ -]{1,}$)/i,
+            user_name   : /(^[a-z0-9]{1,}$)/i,
+            email       : /(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/i
         };
         function validate(element){
+
             if (regex[element.name] != undefined){
                 if(!regex[element.name].test(element.value)){
-                    $(element).css('background-color', 'red');
+                    $(element).parent().addClass("error");
                 } else{
-                    $(element).css('background-color', 'white');
-                }
-            }else if (element.name == "repeat_pass"){
-                if (element.value == $("input[name='password']")[0].value){
-                    console.log("good");
-                    $(element).css('background-color', 'white');
-                }else{
-                    $(element).css('background-color', 'red');
+                    $(element).parent().removeClass("error");
+                    return true;
                 }
             }
+            if (element.name == "repeat_pass" || element.name == "password"){
+                var reg = /(^(.){9,}$)/i;
+                var pass =  ($("input[name='password']")[0]).value;
+                var repeat = ($("input[name='repeat_pass']")[0]).value;
+                if(pass == repeat && repeat.trim() !== "") {
+                    $("input[name='repeat_pass']").parent('div').removeClass("error");
+                    return true;
+                }else{
+                    $("input[name='repeat_pass']").parent('div').addClass("error");
+                }
+                if(reg.test(pass) && pass.trim() !== ""){
+                    $("input[name='password']").parent('div').removeClass("error");
+                    return true;
+                }else{
+                    $("input[name='password']").parent('div').addClass("error");
+                }
+            }
+            return false;
         }
         function check(){
             var check_obj = {
